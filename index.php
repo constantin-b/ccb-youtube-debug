@@ -4,7 +4,7 @@
  Plugin URI: https://wpythub.com/
  Description: Debug for YouTube video import plugin. Plugin is available here: https://goo.gl/VeJ5Ff
  Author: Constantin Boiangiu
- Version: 1.0
+ Version: 1.0.1
  Author URI: https://wpythub.com
  */
 
@@ -14,6 +14,8 @@ if( !defined( 'ABSPATH' ) ){
 }
 
 class CF_VVP_Debug{
+	
+	private $handle;
 	
 	/**
 	 * Store custom post type class reference from main plugin 
@@ -30,6 +32,7 @@ class CF_VVP_Debug{
 		
 		// process errors sent by the plugin
 		add_action( 'cbc_debug_message', array( $this, 'register_error' ), 10, 3 );
+		add_action( 'shutdown', array( $this, 'write_log' ), 999999999 );
 	}
 	
 	/**
@@ -79,6 +82,7 @@ class CF_VVP_Debug{
 			$file = plugin_dir_path( __FILE__ ) . 'import_log';
 			$handle = fopen( $file, 'w' );
 			fclose( $handle );
+			wp_redirect( str_replace( '&#038;' , '&', menu_page_url( 'cbc_debug', false ) ) );
 		}
 		
 	}
@@ -179,10 +183,12 @@ textarea.scrollTop = textarea.scrollHeight;
 		}
 		//*/
 		
-		$handle = fopen( $error_log, "a" );
-		if( false === $handle ){
-			return;
-		}
+		if( !$this->handle ){
+			$this->handle = fopen( $error_log, "a" );
+			if( false === $this->handle ){
+				return;
+			}
+		}	
 		
 		$log_entry = sprintf(
 			__( '[%s] %s', 'ccb_youtube' ),
@@ -191,9 +197,13 @@ textarea.scrollTop = textarea.scrollHeight;
 			//"\n" . print_r( $data, true )
 		);
 			
-		fwrite( $handle, $log_entry ."\n" );
-		
-		fclose( $handle );		
+		fwrite( $this->handle, $log_entry ."\n" );		
+	}
+	
+	public function write_log(){
+		if( $this->handle ){
+			fclose( $this->handle );
+		}	
 	}
 	
 	/**
@@ -201,8 +211,8 @@ textarea.scrollTop = textarea.scrollHeight;
 	 */
 	private function gather_data(){
 		
-		global $CBC_AUTOMATIC_IMPORT;
-		$last_import = $CBC_AUTOMATIC_IMPORT->get_update();
+		global $CBC_POST_TYPE;
+		$last_import = $CBC_POST_TYPE->__get_importer()->get_queue()->get_import_status();
 		
 		$data = array();
 		$data['wp'] = array(
