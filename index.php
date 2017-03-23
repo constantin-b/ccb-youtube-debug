@@ -1,8 +1,8 @@
 <?php 
 /*
- Plugin Name: YouTube import plugin - debug utility
+ Plugin Name: YouTube Hub plugin addon - debug utility
  Plugin URI: https://wpythub.com/
- Description: Debug for YouTube video import plugin. Plugin is available here: https://goo.gl/VeJ5Ff
+ Description: Debug for YouTube Hub plugin. Plugin is available here: https://goo.gl/VeJ5Ff
  Author: Constantin Boiangiu
  Version: 1.0.1
  Author URI: https://wpythub.com
