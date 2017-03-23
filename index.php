@@ -174,7 +174,7 @@ textarea.scrollTop = textarea.scrollHeight;
 		
 		$error_log = plugin_dir_path( __FILE__ ) . 'import_log';
 		//*
-		if( filesize( $error_log ) >= pow(1024, 2) ){
+		if( file_exists( $error_log ) && filesize( $error_log ) >= pow(1024, 2) ){
 			$filename = wp_unique_filename( plugin_dir_path( __FILE__ ), 'import_log' );
 			$result = rename( $error_log , plugin_dir_path( __FILE__ ) . $filename );
 			if( !$result ){
