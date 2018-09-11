@@ -39,15 +39,15 @@ class CBC_YT_Debug{
 	 * Action 'init' callback
 	 */
 	public function init(){
+		if( is_admin() ){
+			$this->plugin_update();
+		}
+
 		global $CBC_POST_TYPE;
 		if( !$CBC_POST_TYPE ){
 			return;
 		}
 		$this->cpt = $CBC_POST_TYPE;
-
-		if( is_admin() ){
-			$this->plugin_update();
-		}
 	}
 	
 	/**
