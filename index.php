@@ -2,9 +2,9 @@
 /*
  Plugin Name: YouTube Hub plugin addon - debug utility
  Plugin URI: https://wpythub.com/
- Description: Debug for YouTube Hub plugin. Plugin is available here: https://goo.gl/VeJ5Ff
+ Description: Debug plugin for YouTube Hub plugin
  Author: Constantin Boiangiu
- Version: 1.0.1
+ Version: 1.0.2
  Author URI: https://wpythub.com
  */
 
@@ -13,7 +13,7 @@ if( !defined( 'ABSPATH' ) ){
 	die();
 }
 
-class CF_VVP_Debug{
+class CBC_YT_Debug{
 	
 	private $handle;
 	
@@ -25,7 +25,7 @@ class CF_VVP_Debug{
 	
 	public function __construct(){
 		
-		add_action( 'init', array( $this, 'set_variables' ) );
+		add_action( 'init', array( $this, 'init' ) );
 		
 		// add extra menu pages
 		add_action( 'admin_menu', array( $this, 'menu_pages' ), 10 );
@@ -38,12 +38,16 @@ class CF_VVP_Debug{
 	/**
 	 * Action 'init' callback
 	 */
-	public function set_variables(){
+	public function init(){
 		global $CBC_POST_TYPE;
 		if( !$CBC_POST_TYPE ){
 			return;
 		}
-		$this->cpt = $CBC_POST_TYPE;		
+		$this->cpt = $CBC_POST_TYPE;
+
+		if( is_admin() ){
+			$this->plugin_update();
+		}
 	}
 	
 	/**
@@ -251,6 +255,21 @@ textarea.scrollTop = textarea.scrollHeight;
 		
 		return $data;
 	}
+
+	/**
+	 * Plugin automatic update
+	 */
+	private function plugin_update(){
+	    if( !class_exists( 'CBC_Theme_Compatibility_Update_Plugin' ) ) {
+		    require_once plugin_dir_path( __FILE__ ) . 'includes/libs/class-update-plugin.php';
+	    }
+
+		$plugin 	= plugin_basename( __FILE__ );
+		$slug 		= dirname( $plugin );
+
+		new CBC_Theme_Compatibility_Update_Plugin( 'https://updates.wpythub.com/plugins/ccb-youtube-debug/?update_notification=1', __FILE__ );
+		new CBC_Theme_Compatibility_Plugin_Update_Details( 'https://updates.wpythub.com/plugins/ccb-youtube-debug/?plugin_details=1', $plugin, $slug );
+	}
 	
 }
-new CF_VVP_Debug();
+new CBC_YT_Debug();
